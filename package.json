@@ -8,7 +8,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "commit": "cz"
+    "commit": "cz",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "nuxt": "^3.13.0",
@@ -16,7 +18,11 @@
     "vue-router": "latest"
   },
   "devDependencies": {
-    "cz-conventional-changelog": "^3.3.0"
+    "@nuxt/eslint": "^0.6.0",
+    "@nuxt/eslint-config": "^0.6.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^9.12.0",
+    "typescript": "^5.6.3"
   },
   "config": {
     "commitizen": {
