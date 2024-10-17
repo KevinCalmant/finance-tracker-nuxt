@@ -11,6 +11,11 @@ const { data: transactions } = await useAsyncData('transactions', async () => {
 	if (error) return []
 	return data
 })
+
+const transactionGroupedByDate = computed(() => groupBy(transactions.value ?? [], ({ created_at }) => {
+	const createdAt = new Date(created_at)
+	return createdAt.toISOString().split("T")[0]
+}))
 </script>
 
 <template>
@@ -31,6 +36,9 @@ const { data: transactions } = await useAsyncData('transactions', async () => {
 	</section>
 
 	<section>
-		<Transactions v-for="transaction in transactions" :key="transaction.id" :transaction="transaction" />
+		<div v-for="(dailyTransactions, date) in transactionGroupedByDate" :key="date" class="mb-10">
+			<DailyTransactionSummary :date="date" :transactions="dailyTransactions" />
+			<Transactions v-for="transaction in dailyTransactions" :key="transaction.id" :transaction="transaction" />
+		</div>
 	</section>
 </template>
