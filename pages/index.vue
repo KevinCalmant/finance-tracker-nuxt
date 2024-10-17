@@ -20,4 +20,11 @@ const selectedView = ref(transactionView[1])
 		<Trend color="green" title="Income" :amount="4000" :last-amount="3000" :loading="false" />
 		<Trend color="red" title="Income" :amount="4000" :last-amount="4100" :loading="false" />
 	</section>
+
+	<section>
+		<Transactions />
+		<Transactions />
+		<Transactions />
+		<Transactions />
+	</section>
 </template>
