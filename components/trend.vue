@@ -1,10 +1,37 @@
 <script setup lang="ts">
-defineProps({
-	title: String,
-	amount: Number,
-	lastAmount: Number,
-	color: String as PropType<'green' | 'red'>,
-	loading: Boolean,
+const { amount, lastAmount } = defineProps({
+	title: {
+		type: String,
+		required: true,
+	},
+	amount: {
+		type: Number,
+		required: true,
+	},
+	lastAmount: {
+		type: Number,
+		required: true,
+	},
+	color: {
+		type: String as PropType<'green' | 'red'>,
+		required: true,
+	},
+	loading: {
+		type: Boolean,
+		required: true,
+	},
+})
+
+const { currency } = useCurrency(amount)
+const trendingUp = computed(() => amount >= lastAmount)
+const percentageTrend = computed(() => {
+	if (amount === 0 || lastAmount === 0) return '∞%'
+
+	const bigger = Math.max(amount, lastAmount)
+	const lower = Math.min(amount, lastAmount)
+	const ratio = ((bigger - lower) / lower) * 100
+
+	return `${Math.ceil(ratio)} % `
 })
 </script>
 
@@ -14,15 +41,16 @@ defineProps({
 
 		<div class="text-2xl font-extrabold text-black dark:text-white mb-2">
 			<USkeleton v-if="loading" class="h-8 w-full" />
-			<div v-else>{{ amount }}</div>
+			<div v-else>{{ currency }}</div>
 		</div>
 
 		<div>
 			<USkeleton v-if="loading" class="h-6 w-full" />
 			<div v-else class="flex space-x-1 items-center text-sm">
-				<UIcon name="i-heroicons-arrow-trending-up" class="w-6 h-6" :class="[color]" />
+				<UIcon :name="`i-heroicons-arrow-trending-${trendingUp ? 'up' : 'down'}`" class="w-6 h-6"
+					:class="[trendingUp ? 'green' : 'red']" />
 				<div class="text-gray-500 dark:text-gray-400">
-					30% vs last period
+					{{ percentageTrend }} vs last period
 				</div>
 			</div>
 		</div>
