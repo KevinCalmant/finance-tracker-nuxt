@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Database } from '~/models/database.types';
 import type { Transaction } from '~/models/transaction.type';
 
 const { transaction } = defineProps({
@@ -8,6 +9,12 @@ const { transaction } = defineProps({
 	}
 })
 
+const emit = defineEmits(['deleted'])
+
+const isLoading = ref(false)
+const toast = useToast()
+const supabase = useSupabaseClient<Database>()
+
 const { currency } = useCurrency(transaction.amount ?? 0)
 const isIncome = computed(() => transaction.type === 'Income')
 const iconName = computed(() =>
@@ -16,6 +23,27 @@ const iconName = computed(() =>
 const iconClass = computed(() =>
 	isIncome.value ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
 );
+
+const deleteTransaction = async () => {
+	isLoading.value = true
+	try {
+		await supabase.from('transactions').delete().eq('id', transaction.id)
+		toast.add({
+			title: 'Transaction deleted',
+			icon: 'i-heroicons-check-circle',
+			color: 'green',
+		})
+		emit('deleted')
+	} catch (error) {
+		toast.add({
+			title: 'Transaction deletion failed',
+			icon: 'i-heroicons-exclamation-circle',
+			color: 'red',
+		})
+	} finally {
+		isLoading.value = false
+	}
+}
 
 const items = [
 	[
@@ -27,7 +55,7 @@ const items = [
 		{
 			label: 'Delete',
 			icon: 'i-heroicons-trash-20-solid',
-			click: () => console.log('Delete'),
+			click: () => deleteTransaction(),
 		}
 	]
 ]
@@ -49,7 +77,7 @@ const items = [
 			<div>{{ currency }}</div>
 			<div>
 				<UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
-					<UButton color="white" variant="ghost" trailing-icon="i-heroicons-ellipsis-horizontal" />
+					<UButton color="white" variant="ghost" trailing-icon="i-heroicons-ellipsis-horizontal" :loading="isLoading" />
 				</UDropdown>
 			</div>
 		</div>

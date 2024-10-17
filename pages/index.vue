@@ -6,7 +6,7 @@ const selectedView = ref(transactionView[1])
 
 const supabase = useSupabaseClient<Database>()
 
-const { data: transactions } = await useAsyncData('transactions', async () => {
+const { data: transactions, refresh, status } = await useAsyncData('transactions', async () => {
 	const { data, error } = await supabase.from('transactions').select()
 	if (error) return []
 	return data
@@ -16,6 +16,8 @@ const transactionGroupedByDate = computed(() => groupBy(transactions.value ?? []
 	const createdAt = new Date(created_at)
 	return createdAt.toISOString().split("T")[0]
 }))
+
+const onTransactionDeleted = () => refresh()
 </script>
 
 <template>
@@ -35,10 +37,15 @@ const transactionGroupedByDate = computed(() => groupBy(transactions.value ?? []
 		<Trend color="red" title="Income" :amount="4000" :last-amount="4100" :loading="false" />
 	</section>
 
-	<section>
+	<section v-if="status === 'success'">
 		<div v-for="(dailyTransactions, date) in transactionGroupedByDate" :key="date" class="mb-10">
 			<DailyTransactionSummary :date="date" :transactions="dailyTransactions" />
-			<Transactions v-for="transaction in dailyTransactions" :key="transaction.id" :transaction="transaction" />
+			<Transactions v-for="transaction in dailyTransactions" :key="transaction.id" :transaction="transaction"
+				@deleted="onTransactionDeleted" />
 		</div>
 	</section>
+	<section v-else>
+		<USkeleton v-for="i in 4" :key="i" class="h-8 w-full mb-2" />
+	</section>
+
 </template>
