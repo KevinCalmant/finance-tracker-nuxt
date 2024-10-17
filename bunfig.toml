@@ -1,0 +1,2 @@
+[plugins]
+dotenv = "bun-plugin-dotenv"
