@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import type { IncomeType } from '~/models/income.types';
+
 const { amount, lastAmount } = defineProps({
 	title: {
-		type: String,
+		type: String as PropType<IncomeType>,
 		required: true,
 	},
 	amount: {

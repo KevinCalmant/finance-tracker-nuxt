@@ -9,7 +9,7 @@ const { transaction } = defineProps({
 	}
 })
 
-const emit = defineEmits(['deleted'])
+const emit = defineEmits(['deleted', 'edit'])
 
 const isLoading = ref(false)
 const toast = useToast()
@@ -45,12 +45,14 @@ const deleteTransaction = async () => {
 	}
 }
 
+const editTransaction = () => emit('edit')
+
 const items = [
 	[
 		{
 			label: 'Edit',
 			icon: 'i-heroicons-pencil-square-20-solid',
-			click: () => console.log('Edit'),
+			click: () => editTransaction(),
 		},
 		{
 			label: 'Delete',
