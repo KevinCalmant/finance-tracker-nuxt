@@ -34,7 +34,6 @@ const transactionCategoryOptions = transactionCategories as unknown as string[]
 const onSubmit = async (event: FormSubmitEvent<Transaction>) => {
 	try {
 		isLoading.value = true
-		// @ts-ignore
 		await supabase.from("transactions").upsert(event.data)
 		toast.add({
 			title: 'Transaction added',

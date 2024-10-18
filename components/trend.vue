@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IncomeType } from '~/models/income.types';
 
-const { amount, lastAmount } = defineProps({
+const props = defineProps({
 	title: {
 		type: String as PropType<IncomeType>,
 		required: true,
@@ -24,13 +24,18 @@ const { amount, lastAmount } = defineProps({
 	},
 })
 
-const { currency } = useCurrency(amount)
-const trendingUp = computed(() => amount >= lastAmount)
-const percentageTrend = computed(() => {
-	if (amount === 0 || lastAmount === 0) return '∞%'
+const {
+	amount,
+	lastAmount,
+} = toRefs(props)
 
-	const bigger = Math.max(amount, lastAmount)
-	const lower = Math.min(amount, lastAmount)
+const { currency } = useCurrency(amount)
+const trendingUp = computed(() => amount.value >= lastAmount.value)
+const percentageTrend = computed(() => {
+	if (amount.value === 0 || lastAmount.value === 0) return '∞%'
+
+	const bigger = Math.max(amount.value, lastAmount.value)
+	const lower = Math.min(amount.value, lastAmount.value)
 	const ratio = ((bigger - lower) / lower) * 100
 
 	return `${Math.ceil(ratio)} % `
