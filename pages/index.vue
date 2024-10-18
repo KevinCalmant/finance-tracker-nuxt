@@ -1,31 +1,11 @@
 <script setup lang="ts">
 import { transactionView } from '~/constants'
-import type { Database } from '~/models/database.types'
 import type { Transaction } from '~/models/transaction.type';
 
 const selectedView = ref(transactionView[1])
 const isAddModalOpen = ref(false)
 const editedTransaction = ref<Transaction>()
-
-const supabase = useSupabaseClient<Database>()
-
-const { data: transactions, refresh: refreshTransactions, status } = await useAsyncData('transactions', async () => {
-	const { data, error } = await supabase.from('transactions').select().order('created_at', { ascending: false }).order('id', { ascending: false })
-	if (error) return []
-	return data
-})
-
-const transactionGroupedByDate = computed(() => groupBy(transactions.value ?? [], ({ created_at }) =>
-	new Date(created_at).toISOString().split('T')[0],
-))
-
-const icome = computed(() => transactions.value?.filter(({ type }) => type === 'Income'))
-const incomeCount = computed(() => icome.value?.length)
-const incomeTotal = computed(() => icome.value?.reduce((total: number, { amount }) => total + (amount ?? 0), 0) ?? 0)
-
-const expense = computed(() => transactions.value?.filter(({ type }) => type === 'Income'))
-const expenseCount = computed(() => expense.value?.length)
-const expenseTotal = computed(() => expense.value?.reduce((total: number, { amount }) => total + (amount ?? 0), 0) ?? 0)
+const { transactionGroupedByDate, refresh, status, incomeCount, incomeTotal, expenseCount, expenseTotal } = await useFetchTransactions()
 
 const toggleAddModal = () => {
 	isAddModalOpen.value = !isAddModalOpen.value
@@ -58,7 +38,7 @@ const toggleAddModal = () => {
 		</div>
 
 		<div>
-			<TransactionModal v-model="isAddModalOpen" :edited-transaction="editedTransaction" @saved="refreshTransactions" />
+			<TransactionModal v-model="isAddModalOpen" :edited-transaction="editedTransaction" @saved="refresh" />
 			<UButton icon="i-heroicons-plus-circle" color="white" variant="solid" label="Add" @click="toggleAddModal" />
 		</div>
 	</section>
@@ -67,7 +47,7 @@ const toggleAddModal = () => {
 		<div v-for="(dailyTransactions, date) in transactionGroupedByDate" :key="date" class="mb-10">
 			<DailyTransactionSummary :date="date" :transactions="dailyTransactions" />
 			<Transactions v-for="transaction in dailyTransactions" :key="transaction.id" :transaction="transaction"
-				@deleted="refreshTransactions" />
+				@deleted="refresh" />
 		</div>
 	</section>
 	<section v-else>

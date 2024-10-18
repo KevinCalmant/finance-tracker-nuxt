@@ -10,6 +10,5 @@ export default createConfigForNuxt({
 			quotes: 'single',
 			arrowParens: true,
 		},
-		typescript: true,
 	},
 })
