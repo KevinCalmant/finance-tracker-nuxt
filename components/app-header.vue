@@ -2,6 +2,10 @@
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 
+const {
+	avatarUrl,
+} = useAvatar()
+
 const items = [
 	[
 		{
@@ -34,7 +38,7 @@ const items = [
 		<div>
 			<UDropdown v-if="user" :items="items" :ui="{ item: { disabled: 'cursor-text select-text' }, width: 'w-64' }"
 				:popper="{ placement: 'bottom-start' }">
-				<UAvatar src="https://avatars.githubusercontent.com/u/739984?v=4" alt="avatar" />
+				<UAvatar :src="avatarUrl ?? ''" alt="avatar" />
 
 				<template #account="{ item }">
 					<div class="text-left">

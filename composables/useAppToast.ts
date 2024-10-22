@@ -16,7 +16,7 @@ export const useAppToast = () => {
 			toast.add({
 				title,
 				description,
-				icon: 'i-heroicosn-exclamation-circle',
+				icon: 'i-heroicons-exclamation-circle',
 				color: 'red'
 			})
 		}
