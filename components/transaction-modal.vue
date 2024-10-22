@@ -24,7 +24,10 @@ const initialState = {
 }
 
 const supabase = useSupabaseClient<Database>()
-const toast = useToast()
+const {
+	toastSuccess,
+	toastError,
+} = useAppToast()
 const isLoading = ref(false)
 const state = ref(editedTransaction ?? initialState)
 
@@ -35,19 +38,15 @@ const onSubmit = async (event: FormSubmitEvent<Transaction>) => {
 	try {
 		isLoading.value = true
 		await supabase.from("transactions").upsert(event.data)
-		toast.add({
-			title: 'Transaction added',
-			icon: 'i-heroicons-check-circle',
-			color: 'green',
+		toastSuccess({
+			title: 'Transaction added'
 		})
 		state.value = initialState
 		emits('saved')
 		isOpen.value = false
 	} catch (error) {
-		toast.add({
+		toastError({
 			title: 'Transaction not saved',
-			icon: 'i-heroicons-exclamation-circle',
-			color: 'red',
 		})
 	} finally {
 		isLoading.value = false

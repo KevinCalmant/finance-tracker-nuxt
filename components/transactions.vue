@@ -12,7 +12,10 @@ const { transaction } = defineProps({
 const emit = defineEmits(['deleted', 'edit'])
 
 const isLoading = ref(false)
-const toast = useToast()
+const {
+	toastSuccess,
+	toastError,
+} = useAppToast()
 const supabase = useSupabaseClient<Database>()
 
 const { currency } = useCurrency(transaction.amount ?? 0)
@@ -28,17 +31,13 @@ const deleteTransaction = async () => {
 	isLoading.value = true
 	try {
 		await supabase.from('transactions').delete().eq('id', transaction.id)
-		toast.add({
+		toastSuccess({
 			title: 'Transaction deleted',
-			icon: 'i-heroicons-check-circle',
-			color: 'green',
 		})
 		emit('deleted')
 	} catch (error) {
-		toast.add({
+		toastError({
 			title: 'Transaction deletion failed',
-			icon: 'i-heroicons-exclamation-circle',
-			color: 'red',
 		})
 	} finally {
 		isLoading.value = false
