@@ -2,7 +2,9 @@
 import { transactionViewPeriod } from '~/constants'
 import type { Transaction } from '~/models/transaction.type';
 
-const selectedView = ref(transactionViewPeriod[1])
+const user = useSupabaseUser()
+
+const selectedView = computed(() => user.value?.user_metadata?.preferences?.transactionView ?? transactionViewPeriod[1])
 const isAddModalOpen = ref(false)
 const editedTransaction = ref<Transaction>()
 const { previous, current } = useSelectedTimePeriod(selectedView)
