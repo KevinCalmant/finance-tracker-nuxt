@@ -13,6 +13,7 @@ const { transactionGroupedByDate, refresh, status, incomeCount, incomeTotal, exp
 const { refresh: refreshPrevious, incomeTotal: previousIncomeTotal, expenseTotal: previousExpenseTotal } = await useFetchTransactions(previous)
 
 const toggleAddModal = () => {
+	editedTransaction.value = undefined
 	isAddModalOpen.value = !isAddModalOpen.value
 }
 
@@ -50,7 +51,8 @@ const onSave = () => {
 		</div>
 
 		<div>
-			<TransactionModal v-model="isAddModalOpen" :edited-transaction="editedTransaction" @saved="onSave" />
+			<TransactionModal v-if="isAddModalOpen" v-model="isAddModalOpen" :transaction="editedTransaction"
+				@saved="onSave" />
 			<UButton icon="i-heroicons-plus-circle" color="white" variant="solid" label="Add" @click="toggleAddModal" />
 		</div>
 	</section>
@@ -59,7 +61,7 @@ const onSave = () => {
 		<div v-for="(dailyTransactions, date) in transactionGroupedByDate" :key="date" class="mb-10">
 			<DailyTransactionSummary :date="date" :transactions="dailyTransactions" />
 			<Transactions v-for="transaction in dailyTransactions" :key="transaction.id" :transaction="transaction"
-				@deleted="refresh" />
+				@deleted="refresh" @edited="refresh" />
 		</div>
 	</section>
 	<section v-else>

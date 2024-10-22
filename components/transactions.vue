@@ -9,8 +9,9 @@ const { transaction } = defineProps({
 	}
 })
 
-const emit = defineEmits(['deleted', 'edit'])
+const emit = defineEmits(['deleted', 'edited'])
 
+const isEditModalOpen = ref(false)
 const isLoading = ref(false)
 const {
 	toastSuccess,
@@ -44,7 +45,7 @@ const deleteTransaction = async () => {
 	}
 }
 
-const editTransaction = () => emit('edit')
+const editTransaction = () => isEditModalOpen.value = true
 
 const items = [
 	[
@@ -79,6 +80,8 @@ const items = [
 			<div>
 				<UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
 					<UButton color="white" variant="ghost" trailing-icon="i-heroicons-ellipsis-horizontal" :loading="isLoading" />
+					<TransactionModal v-if="isEditModalOpen" v-model="isEditModalOpen" :transaction="transaction"
+						@saved="emit('edited')" />
 				</UDropdown>
 			</div>
 		</div>
