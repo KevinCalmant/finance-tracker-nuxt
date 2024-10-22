@@ -8,7 +8,7 @@ export const useAppToast = () => {
 			toast.add({
 				title,
 				description,
-				icon: 'i-heroicosn-check-circle',
+				icon: 'i-heroicons-check-circle',
 				color: 'green',
 			})
 		},
